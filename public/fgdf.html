@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+makeRightBlock(arrImagesforSERVICEType, ListOfTASKS){
+console.log(arrImagesforSERVICEType);
+$('#wrapper').append('<div id="divRightBlock"></div>');
+$('#divRightBlock').animate({'right':'0px'},500, 'linear');
+$('#divRightBlock').append('<div class="divINRightBlock_TEXTtaskMade"><span class="spanNEWtask">NEW TASK</span></div>')
+$('.divINRightBlock_TEXTtaskMade').append('<input type="button" value="CREATE TASK">');
+$('#divRightBlock').append('<span class="spanLocation">LOCATION</span><input type="text" value="type location..." id="Location">');
+$('#divRightBlock').append('<div class="ServiceTypeVlock"><span class="spanServicetype">SERVICE TYPE</span></div>');
+
+
+for (var x = 0; x < arrImagesforSERVICEType.length; x++){
+if(arrImagesforSERVICEType[x] === 'combinedShape.svg'){
+continue;
+}
+var name= arrImagesforSERVICEType[x].lastIndexOf('.');
+name = arrImagesforSERVICEType[x].substr(0,name);
+console.log(name);
+var nameOutput = name[0].toUpperCase() + name.substr(1);
+console.log(nameOutput);
+$('.ServiceTypeVlock').append(`<div><img src="../IMG/${arrImagesforSERVICEType[x]}" id="${name}"><span class="SignatureOfImg">${nameOutput}</span></div>`)
+if(x === 0){
+$('.ServiceTypeVlock img#' + name).addClass('activeIMG');
+this.saveIdIMG = name;
+var imgId = this.saveIdIMG;
+}
+}
+$('.ServiceTypeVlock img').on('click', controller.imageClicked.bind(controller));
+
+/*function createBlockTasks (imgId, ListOfTASKS){//makes block with tasks for special worker
+//console.log($('.ServiceTypeVlock img.activeIMG'));
+//var nameForTASKS = document.querySelector('.activeIMG');
+// var idGet = nameForTASKS.id;
+var touppercase = imgId.toUpperCase();
+$('#divRightBlock').append('<div class="TASKS"><span>' + touppercase + ' TASKS</span></div>');
+for (var key in ListOfTASKS){
+console.log(key);
+if(key === imgId){
+for (var keyTask in ListOfTASKS[key]){
+$('div.TASKS').append(`<p>${ListOfTASKS[key][keyTask]}</p>`)
+}
+}
+}
+
+}
+createBlockTasks (imgId, ListOfTASKS);*/
+
+</body>
+</html>

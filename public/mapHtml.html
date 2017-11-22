@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="javascripts/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="CSS/styleForMap.css" type="text/css">
+</head>
+<body>
+<script>
+
+
+    class Task {
+        makeobjTASKS(ListOfTASKS, person, location, description){
+            if( typeof person !== 'undefined'){
+                this.ServiceType = {name:person};
+            }
+            console.log(this.ServiceType);
+            console.log( ListOfTASKS);
+            var save = this.ServiceType.name + '_TASK';
+            var obj = [],
+                task = ListOfTASKS[this.ServiceType.name];
+
+            this.ServiceType.chousedItems = [];
+            for (var key2 in task){
+                console.log(key2);
+
+                if(key2 === '0'){
+                    this.ServiceType.chousedItems.push(task[key2]);
+                }
+                obj.push(task[key2]);
+            }
+            this.ServiceType[save] = obj;
+            if(typeof location === 'undefined'){
+                if(controller.arrSave.location){
+                    this.ServiceType.location = controller.arrSave.location;
+                }else{ this.ServiceType.location = 'type location...';}
+            }
+            if(typeof description === 'undefined'){
+                if(controller.arrSave.location){
+                    this.ServiceType.description = controller.arrSave.description;
+                }else{ this.ServiceType.description =  'type description...';}
+            }
+            if(typeof location !== 'undefined'){
+                this.ServiceType.location = location;
+            }
+            if(typeof description !== 'undefined'){
+                this.ServiceType.description = description;
+            }
+
+            console.log( this.ServiceType);
+        }
+
+
+        addChousedSpanItems(objChousedItems){
+            console.log(objChousedItems);
+            this.ServiceType.chousedItems = objChousedItems;
+        }
+
+        addLocation(location){
+            this.ServiceType.location = location;
+        }
+        insertDescription (description){
+            this.ServiceType.description = description;
+        }
+        maketASKfromGETPUT(json){
+            console.log('worjs');
+            console.log(this);
+            console.log(json );
+            this.ServiceType= json['ServiceType'];
+        }
+    }
+
+
+    class SaveInJSON_TASK{
+        callServerTosave (task){
+            var date = new Date();
+            var day = date.getDate();
+            var mounth = date.getMonth();
+            var year = date.getFullYear();
+            var time = date.getHours() + ":" + date.getMinutes();
+            var str = day + " " + mounth + " " + year + "year, at " + time;
+            task.ServiceType.date = str;
+            //console.log(task);
+            $.ajax({
+                url:'/TASK',
+                dateType: 'json',
+                type: 'POST',
+                data: task,
+                success:(json)=>{
+                    console.log(json);
+                    $('div#divRightBlock').remove();
+                    controller.NEWtaskClickedopened = false;
+                    $('div#divLeftBlock').remove();
+                    if(typeof json ==='string'){
+                        var json = JSON.parse(json);
+                    }
+                     controller.giveJsonForView(json);
+                }
+            });
+        }
+        callServerTosaveCHANGES(){
+            console.log('callServerTosaveCHANGES');
+            if(controller.arrSave.id){
+                task['ServiceType'].id = controller.arrSave.id;
+                task['ServiceType'].date = controller.arrSave.date;
+                console.log(task);
+            }
+            $.ajax({
+                url:'/TASKchangedTOsave',
+                dateType: 'json',
+                type: 'PUT',
+                data: task,
+                success:(json)=>{
+                    console.log(json);
+                    if(typeof json ==='string'){
+                        var json = JSON.parse(json);
+                    }
+                    $('div#divLeftBlock').remove();
+                    controller.giveJsonForView(json);
+                }
+            });
+        }
+    }
+    class DeleteEditUser{
+            deleteUser (eventTarget){
+                var classWithId = $(eventTarget).closest('div').attr('class');
+                console.log(classWithId);
+                var divedeclassWithId = classWithId.split(" ");
+                var id = divedeclassWithId.find((element)=> {
+                    return isFinite(element);
+                });
+               console.log(id);
+                var objId= {"id": id};
+                $.ajax({
+                    url:'/deleteUser',
+                    dateType: 'json',
+                    type: 'DELETE',
+                    data: objId,
+                    success:(json)=>{
+                        console.log(json);
+                        $('div#divLeftBlock').remove();
+                        if(typeof json ==='string'){
+                            var json = JSON.parse(json);
+                        }
+                        controller.giveJsonForView(json);
+                    }
+                });
+            }
+        editeUser(eventTarget){
+            var classWithId = $(eventTarget).closest('div').attr('class');
+            console.log(classWithId);
+            var divedeclassWithId = classWithId.split(" ");
+            var id = divedeclassWithId.find((element)=> {
+                return isFinite(element);
+            });
+            console.log(id);
+            var objId= {"id": id};
+            $.ajax({
+                url:'/editeUserONPage',
+                type: 'PUT',
+                data: objId,
+                success:(json)=>{
+                    console.log(json);
+                    if(typeof json ==='string'){
+                        var json = JSON.parse(json);
+                    }
+                    controller.arrSave.id=json['ServiceType'].id;
+                    controller.arrSave.date=json['ServiceType'].date;
+                    controller.arrSave.location=json['ServiceType'].location;
+                    controller.arrSave.description=json['ServiceType'].description;
+                    controller.callViewToChangeRightBlock_withGOTtask(json);
+                    console.log(controller.arrSave);
+                }
+            });
+        }
+    }
+
+    class DateFromServerGet{
+        getJson(){
+            $.ajax({
+                url:'/allTasks',
+                dateType: 'json',
+                type: 'GET',
+                success:(json)=>{
+                    console.log(json);
+                    $('div#divLeftBlock').remove();
+                    if(typeof json ==='string'){
+                        var json = JSON.parse(json);
+                    }
+                    controller.giveJsonForView(json);
+                }
+            });
+        }
+    }
+    class View {
+        constructor(namesOfMenuItems){
+            this.namesOfMenuItems = namesOfMenuItems;
+        }
+        createPage(){
+            $('body').append('<section><ul id="ulMenu"></ul><div id="wrapper"></div></section>');
+            for (var x = 0; x<this.namesOfMenuItems.length; x++){
+                $('ul#ulMenu').append('<li id="' + x + '"><span></span><a>' + this.namesOfMenuItems[x] + '</a></li>');
+            }
+
+            $('#ulMenu li').on('click', controller.itemFromMenuClicked.bind(controller));
+        }
+
+        procesClickOnMenuItem(eventTarget){
+            var idOfLi = Number($(eventTarget).closest('li').attr('id'));
+            if(typeof this.saveId  === 'undefined'){
+                $(eventTarget).closest('li').addClass('active');
+                this.saveId = Number(idOfLi);
+            }else if(typeof this.saveId  !== 'undefined'){
+               if(idOfLi !== this.saveId){
+                   $('ul#ulMenu li').removeClass('active');
+                   $(eventTarget).closest('li').addClass('active');
+                   this.saveId = idOfLi;
+               }
+            }
+            if(Number(idOfLi) === 0){
+                console.log(idOfLi);
+            }else if(Number(idOfLi) === 1){
+                console.log(idOfLi + ' ' + 'DASHBOARD');
+                controller.DASHBOARDclicled();
+            }else if(Number(idOfLi) === 2){
+                console.log(idOfLi);
+            }else if(Number(idOfLi) === 3){
+                console.log(idOfLi);
+            }
+        }
+
+        outputLeftBlockWithTasks(parsedJson){
+            $('#wrapper').append('<div id="divLeftBlock"><a class="AaddTask">+ NEW TASK </a></div>');
+            $('<a class="ClouseDashboard"><b> X </b> </a>').insertBefore('.AaddTask');
+
+            $('.ClouseDashboard').on('click', controller.CloseDASHBOAREDwasclicked.bind(controller));
+            $('.AaddTask').on('click', controller.NEWtaskClicked.bind(controller));
+
+            if(parsedJson.length !== 0){
+                console.log(parsedJson.length);
+                console.log(parsedJson);
+                for (var x = 0; x< parsedJson.length; x++){
+                    console.log(parsedJson[x]['ServiceType'].id);
+                    $('#divLeftBlock').append(`<div class="divINLeftBlock ${parsedJson[x]['ServiceType'].id}"></div>`);
+                    $('.divINLeftBlock.' + parsedJson[x]['ServiceType'].id).append(`<p class="pDate">${parsedJson[x]['ServiceType'].date}</p>`);
+                    $('.divINLeftBlock.' + parsedJson[x]['ServiceType'].id).append(`<p class="pTask"></p>`);
+                    var str= `I need a ${parsedJson[x]['ServiceType'].name}`;
+                    for(var key in parsedJson[x]['ServiceType']['chousedItems']){
+                            str += ` to ${parsedJson[x]['ServiceType']['chousedItems'][key]}`;
+                     }
+                    $('div.divINLeftBlock.' + parsedJson[x]['ServiceType'].id + ' .pTask').html(str);
+                    $('.divINLeftBlock.' + parsedJson[x]['ServiceType'].id).append(`<p class="pForButtons"><a class="aEdit">EDIT</a><a class="aDelete">DELETE</a></p>`);
+                }
+                $('a.aDelete').on('click', controller.deleteButtonTaskClicked.bind(controller));
+                $('a.aEdit').on('click', controller.editeButtonTaskClicked.bind(controller));
+            }
+        }
+
+        ToHideShowButtons(){
+            console.log('hide');
+            $('#idCreateTask').css('display', 'none');
+            $('#idChangeTask').css('display', 'inline-block');
+        }
+
+        makeRightBlock(task, arrImagesforSERVICEType){
+           if(document.getElementById('divRightBlock')){
+           } else {
+               $('#wrapper').append('<div id="divRightBlock"></div>');
+               $('#divRightBlock').animate({'right':'0px'},500, 'linear');
+               $('#divRightBlock').append('<div class="divINRightBlock_TEXTtaskMade"><span class="spanNEWtask"> NEW TASK </span><span class="spanNEWtaskCLOSE"> <b>X</b> </span></div>');
+               $('.divINRightBlock_TEXTtaskMade').append(`<div id="divI_need_a"><span class="spanDefaultTask"> I need <b> a ${task.ServiceType.name} </b> </span></div>`);
+               $('.divINRightBlock_TEXTtaskMade').append('<input type="button" value="CREATE TASK" id="idCreateTask">');
+               $('.divINRightBlock_TEXTtaskMade').append('<input type="button" value="CHANGE TASK" id="idChangeTask">');
+
+               $('.spanNEWtaskCLOSE').on('click', controller.spanNEWtaskCLOSE_ButClicked.bind(controller));
+               $('#idCreateTask').on('click', controller.CreateTaskButClicked.bind(controller));
+               $('#idChangeTask').on('click', controller.CHANGETaskButClicked.bind(controller));
+
+               $(`<span class="addedLocationSpan"></span>`).insertBefore('.divINRightBlock_TEXTtaskMade input[type="button"]#idCreateTask');
+               $('#divRightBlock').append('<span class="spanLocation">LOCATION</span><input type="text" id="Location">');
+               $('#Location').on('change',  controller.inputLocationClicked.bind(controller));
+               $('#divRightBlock').append('<div class="ServiceTypeVlock"><span class="spanServicetype">SERVICE TYPE</span></div>');
+               $('#divRightBlock').append('<div class="TASKS"><span class="SpanTestheader"></span></div>');
+               $('div.TASKS').append('<div class="divForAllTasks"></div>');
+               $('div.divForAllTasks').append(`<span></span>`);
+           }
+
+            var meView = this;
+            console.log(task);
+
+            function makeNEWtask(){
+                var str = `I need <b> a ${task.ServiceType.name}`;
+                for(var key2 in task.ServiceType.chousedItems){
+                    console.log(task.ServiceType.chousedItems[key2]);
+                     $('.spanDefaultTask').html();
+                     str += ` to <b> ${task.ServiceType.chousedItems[key2]} <b> `;
+                }
+                if(task.ServiceType.description !== 'type description...'){
+                    str += `, <b>${task.ServiceType.description} </b>`;
+                }
+                $('.spanDefaultTask').html(str);
+
+                if(task.ServiceType.location !== 'type location...'){
+                    $("input#Location").val(task.ServiceType.location);
+                  }else {
+                    $("input#Location").attr('placeholder', task.ServiceType.location)
+                }
+            }
+            makeNEWtask();
+
+
+            function makeLocation() {//make location
+                if(task.ServiceType.location !== 'type location...'){
+                    $(".spanLocation input#Location").val(task.ServiceType.location);
+                }
+            }
+            makeLocation();
+                if(!document.querySelector('.ServiceTypeVlock div')){
+                    console.log("NO");
+                    }else {
+                    $('.ServiceTypeVlock').html('');
+                    $('.ServiceTypeVlock img').off('click');
+                }
+
+                for (var x = 0; x < arrImagesforSERVICEType.length; x++){//makes imgs type of Service
+                    if(arrImagesforSERVICEType[x] === 'combinedShape.svg'){ continue; }
+                    var name= arrImagesforSERVICEType[x].lastIndexOf('.');
+                    name = arrImagesforSERVICEType[x].substr(0,name);
+                    var nameOutput = name[0].toUpperCase() + name.substr(1);
+                    $('.ServiceTypeVlock').append(`<div><img src="../IMG/${arrImagesforSERVICEType[x]}" id="${name}"><span class="SignatureOfImg">${nameOutput}</span></div>`);
+                }
+
+            $('.ServiceTypeVlock img').on('click', controller.imageClicked.bind(controller));
+             console.log(task.ServiceType.name);
+            var task_ServiceType_name = task.ServiceType.name;
+            $('.ServiceTypeVlock img#' + task_ServiceType_name).addClass('activeIMG');
+
+            function createBlockTasks (task_ServiceType_name){//makes block with tasks for special worker
+                var touppercase = task_ServiceType_name.toUpperCase();
+                $('.SpanTestheader').html(touppercase + ' TASKS');
+
+                var count=0;
+                for (var key in task.ServiceType){
+                    if(key === 'chousedItems'){
+                    }
+                    else if(typeof task.ServiceType[key] === 'object' && key !== 'chousedItems'){
+                        console.log(key);
+                        if(!document.querySelector('div.divForAllTasks span')){
+                        }else {
+                            $('div.divForAllTasks').html('');
+                            $('div.divForAllTasks span').off('click');
+                        }
+                        for (var key2 in task.ServiceType[key]){
+                            $('div.divForAllTasks').append(`<span id="${count}span">${task.ServiceType[key][key2]}</span>`);
+                                console.log(task.ServiceType[key][key2]);
+                           for(var keyInChousedItems in task.ServiceType.chousedItems) {
+                               console.log(keyInChousedItems);
+                               if(task.ServiceType.chousedItems[keyInChousedItems] === task.ServiceType[key][key2]){
+                                   console.log(keyInChousedItems);
+                                   $('div.divForAllTasks span#' + count + "span").toggleClass( "activeSPAN" );
+                               }
+                           }
+                            count++;
+                        }
+                    }
+                }
+                $('div.divForAllTasks span').on('click', controller.SpanClicked.bind(controller));
+            }
+            createBlockTasks (task_ServiceType_name);
+
+
+
+            function makeDescription() {//make Description
+                if(!document.querySelector('.Description')){
+                    $('#divRightBlock').append('<div class="Description"> <p>DESCRIPTION</p><input type="text" id="Description"></div>');
+                    $('#Description').on('change',  controller.inputDescriptionClicked.bind(controller));
+                }
+                if(task.ServiceType.description !== 'type description...'){
+                    console.log(task.ServiceType.description);
+                    $("input#Description").val(task.ServiceType.description);
+                }else {
+                    $("input#Description").attr('placeholder', task.ServiceType.description)
+                }
+
+            }
+            makeDescription();
+        }
+
+        insertLocation(eventTargetLocation){
+            this.location = $(eventTargetLocation).val();
+            console.log(this);
+            $(eventTargetLocation).value = this.location;
+            $('.addedLocationSpan').html(`${this.location}`);
+        }
+
+        insertDescription(eventTargetDescription){
+            this.description = $(eventTargetDescription).val();
+            console.log(this);
+            $(eventTargetDescription).value =  this.description;
+        }
+
+        hightlightImg(eventTarget){
+            $('img').removeClass( "activeIMG");
+            $(eventTarget).toggleClass( "activeIMG");
+            console.log(task);
+        }
+
+        hightlightSpanTASK(eventTarget){
+            console.log(eventTarget);
+            var housedItems = [];
+           $(eventTarget).toggleClass( "activeSPAN" );
+           var kollektcia = document.getElementsByClassName('activeSPAN');
+             for (var z = 0; z<kollektcia.length; z++){
+                 housedItems.push (kollektcia[z].innerText);
+             }
+             return housedItems;
+        }
+        closeDASHBOARDremove(){
+            $('div#divLeftBlock').remove();
+        }
+        closeRightWindow(){
+            $('div#divRightBlock').remove();
+        }
+    }
+    class Controller {
+        constructor(arrImagesforSERVICEType, ListOfTASKS){
+            this.arrSave = [];
+            this.arrImagesforSERVICEType = arrImagesforSERVICEType;
+            this.ListOfTASKS = ListOfTASKS;
+        }
+        callVIEWtoCreatePage (){
+            view.createPage();
+        }
+        itemFromMenuClicked(){
+            var eventTarget = event.target;
+            console.log(eventTarget);
+            view.procesClickOnMenuItem(eventTarget);
+        }
+        DASHBOARDclicled(){
+            var dateFromServerGet = new DateFromServerGet();
+            dateFromServerGet.getJson();
+        }
+        giveJsonForView(json){
+            console.log(json);
+            view.outputLeftBlockWithTasks(json);
+        }
+        NEWtaskClicked(){
+                task.makeobjTASKS(this.ListOfTASKS, 'electician');
+                view.makeRightBlock(task, this.arrImagesforSERVICEType);
+        }
+        outputRightBlockEditTask(json){
+            view.makeRightBlock(json, this.arrImagesforSERVICEType);
+        }
+        CloseDASHBOAREDwasclicked(){
+            view.closeDASHBOARDremove();
+        }
+        CreateTaskButClicked(){
+            var saveInJSON_TASK = new SaveInJSON_TASK();
+            saveInJSON_TASK.callServerTosave (task);
+        }
+        CHANGETaskButClicked(){
+            console.log(task);
+            var saveInJSON_TASK = new SaveInJSON_TASK();
+            saveInJSON_TASK.callServerTosaveCHANGES(task);
+        }
+        imageClicked(){
+            view.hightlightImg(event.target);
+            var person = event.target.id;
+            console.log(event.target.id);
+            console.log(task);
+            task.makeobjTASKS(this.ListOfTASKS, person, view.location, view.description);
+
+            console.log(task);
+            view.makeRightBlock(task, this.arrImagesforSERVICEType);
+        }
+
+        SpanClicked (){
+            console.log(event.target);
+            var objChousedItems= view.hightlightSpanTASK(event.target);
+            task.addChousedSpanItems(objChousedItems);
+            console.log(task);
+            view.makeRightBlock(task, this.arrImagesforSERVICEType);
+        }
+
+        inputLocationClicked(){
+            var eventTargetLocation = event.target;
+            view.insertLocation(eventTargetLocation);
+            task.addLocation(view.location);
+            console.log(task);
+            view.makeRightBlock(task, this.arrImagesforSERVICEType);
+        }
+        inputDescriptionClicked(){
+            var eventTargetDescription = event.target;
+            view.insertDescription(eventTargetDescription);
+            task.insertDescription(view.description);
+            console.log(task);
+            view.makeRightBlock(task, this.arrImagesforSERVICEType);
+        }
+        deleteButtonTaskClicked(){
+            var eventTarget  =event.target;
+            console.log(eventTarget);
+            var deleteEditUser =  new DeleteEditUser();
+            deleteEditUser.deleteUser(eventTarget);
+        }
+        editeButtonTaskClicked(){
+            var eventTarget  =event.target;
+            var deleteEditUser =  new DeleteEditUser();
+            deleteEditUser.editeUser(eventTarget);
+        }
+        callViewToChangeRightBlock_withGOTtask(json){
+            task.maketASKfromGETPUT(json);
+            view.makeRightBlock(task, this.arrImagesforSERVICEType);
+            view.ToHideShowButtons();
+        }
+        spanNEWtaskCLOSE_ButClicked(){
+            view.closeRightWindow();
+            task.makeobjTASKS(this.ListOfTASKS, 'electician');
+        }
+    }
+var namesOfMenuItems = ['JobUp', 'DASHBOARD', 'HISTORY', 'PROFILE'];
+var ListOfTASKS = {
+    plumber :{0:'unlock a toilet', 1:'unblock a sink', 2:'fix a water leak', 3:'instal a sink', 4:'install a shower', 5:'instal a toilet'},
+    cook :{0:'cook a pizza', 1:'cook a soup', 2:'make a dinner for family', 3:'serve a table', 4:'serve a holiday table', 5:'cook a meat'},
+    electician : {0:'make a light',1:'repair a lamp', 2:'repair the wires', 3:'repair wiring', 4:'conduct electricity', 5:'connect the cooker'},
+    gardener :{0:'cut the garden', 1:'cut the tree', 2:'water the garden', 3:'water the flowers', 4:'plant a garden', 5:'plant a tree', 6:'plant a flowers'},
+    housekeeper :{0:'iron clothes', 1:'water clothes', 2:'iron dress', 3:'clear clothes', 4:'wash a floor', 5:'wash a house', 6:'wash a dog'}
+};
+var arrImagesforSERVICEType = ['electician.svg', 'plumber.svg', 'gardener.svg', 'housekeeper.svg', 'cook.svg', 'combinedShape.svg'];
+ var task = new Task ();
+var view = new View (namesOfMenuItems);
+var controller = new Controller (arrImagesforSERVICEType, ListOfTASKS);
+  controller.callVIEWtoCreatePage()
+</script>
+</body>
+</html>

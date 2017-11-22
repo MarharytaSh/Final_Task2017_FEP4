@@ -1,0 +1,268 @@
+body{
+    font-family: Geneva, Arial, Helvetica, sans-serif;
+}
+*{
+    margin:0px;
+    padding:0px;
+}
+section{
+    width:1100px;
+    height:1253px;
+    background: url('../IMG/map_bg.png') no-repeat;
+    margin:0 auto;
+    overflow: hidden;
+}
+
+ul#ulMenu{
+    margin:0px;
+    padding:0px;
+    width:100%;
+
+    background: white;
+}
+ul#ulMenu li a{
+    display:block;
+    padding: 10px 10px 10px 10px;
+
+}
+
+ul#ulMenu li:first-child {
+    color:orangered;
+    margin-right: 40px;
+}
+
+ul#ulMenu li{
+    font-size: 16px;
+    padding: 10px 10px 10px 10px;
+    margin-left: 20px;
+    display: inline-block;
+    text-align: center;
+    line-height: 40px;
+    color:gray;
+    font-weight: bold;
+    cursor: pointer;
+}
+ul#ulMenu li:last-child{
+    content:'';
+    clear:both;
+}
+ ul#ulMenu li:last-child{
+    float:right;
+    text-align: center;
+}
+li.active span{
+    background: #484848;
+    height:5px;
+    display:block;
+}
+li span{
+    height:5px;
+    display:block;
+}
+#wrapper{
+    position: relative;
+}
+#divLeftBlock{
+    position: absolute;
+    width:300px;
+    margin-left: 20px;
+    vertical-align: top;
+}
+.ClouseDashboard{
+    color:#3366CC;
+    cursor:pointer;
+ }
+#divLeftBlock .AaddTask{
+    text-align: center;
+    display:block;
+    width:100%;
+    background: white;
+    height: 50px;
+    line-height: 50px;
+    color:#3366CC;
+    cursor:pointer;
+    margin-bottom:10px;
+    margin-top:10px;
+}
+.divINLeftBlock{
+    margin-bottom:10px;
+    padding: 8px;
+    background: white;
+
+}
+#divLeftBlock .pDate{
+    color:	#A0A0A0;
+    padding:10px 10px 10px 20px;
+
+}
+
+#divLeftBlock .pTask{
+    padding-left:20px;
+    color: 	#484848;
+    padding-bottom: 10px;
+}
+.pForButtons{
+    height:30px;
+    padding-bottom: 10px;
+}
+.aEdit, .aDelete{
+    display:inline-block;
+    margin-left: 20px;
+    font-size: 12px;
+    cursor:pointer;
+}
+.aDelete{
+  color:  #484848;
+}
+.aEdit{
+    background: #3366CC;
+    border:1px solid grey;
+    border-radius: 2px;
+    padding: 5px 15px 5px 15px;
+    color:white;
+    margin-left: 20px;
+}
+#divRightBlock{
+    width:450px;
+     padding-bottom: 80px;
+    background: white;
+    position: absolute;
+    right:-1100px;
+ }
+.divINRightBlock_TEXTtaskMade{
+    background: #E8E8E8;
+    width:100%;
+    padding: 20px;
+}
+.spanNEWtask{
+    color:	#B0B0B0;
+    display: inline-block;
+    width:85%;
+
+}
+.spanNEWtaskCLOSE{
+    color:blue;
+    display: inline-block;
+    width:10%;
+    cursor:pointer;
+}
+.divINRightBlock_TEXTtaskMade input[type="button"]{
+    width:100px;
+    height:40px;
+    background: #3366CC;
+    border:1px solid grey;
+    border-radius: 2px;
+    color:white;
+    font-size: 12px;
+    display: block;
+
+}
+.spanLocation{
+    display: block;
+    color: 	#909090;
+    margin:20px 25px 10px 25px;
+}
+input[type="text"]#Location{
+    display: block;
+    width:85%;
+    padding: 10px;
+    margin-left: 20px;
+    border:none;
+}
+.ServiceTypeVlock{
+    padding: 10px;
+}
+.ServiceTypeVlock span.spanServicetype{
+    display:block;
+    margin-left: 20px;
+    color: 	#909090;
+    margin-top: 20px;
+}
+.ServiceTypeVlock div{
+    display: inline-block;
+    font-size: 12px;
+    margin-left: 30px;
+    text-align: center;
+    margin-top: 20px;
+}
+.ServiceTypeVlock div:first-child{
+    margin-left: 20px;
+}
+.ServiceTypeVlock img{
+
+}
+.ServiceTypeVlock span.SignatureOfImg{
+    display:block;
+    width:100%;
+    margin-top: 20px;
+}
+
+img.activeIMG{
+    border:1px solid blue;
+    border-radius: 100px;
+    padding: 10px;
+}
+div.TASKS span.SpanTestheader{
+    display:block;
+    margin-left: 20px;
+    margin-top: 20px;
+    padding: 10px;
+    color: 	#909090;
+}
+div.TASKS div.divForAllTasks{
+    margin-left: 20px;
+}
+div.divForAllTasks span{
+    padding: 5px;
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+div.TASKS span:first-child{
+
+}
+.activeSPAN{
+    border: 1px solid blue;
+    border-radius: 5px;
+}
+div.Description p{
+    color: 	#909090;
+    margin-left: 25px;
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+div.Description input{
+    margin-left: 25px;
+    padding: 10px;
+    border:none;
+    width: 85%;
+}
+#divI_need_a{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width:85%;
+}
+#divI_need_a span{
+    display: inline-block;
+    color:black;
+}
+.toInsertAllTasks{
+
+}
+.spanDefaultTask{
+    display: inline-block;
+    margin-top:5px;
+    font-size: 17px;
+    margin-bottom:10px;
+}
+.addedLocationSpan{
+    display: block;
+    padding-top: 10px;
+   padding-bottom: 20px;
+    width:80%;
+}
+#idChangeTask{
+    display: none;
+
+}
