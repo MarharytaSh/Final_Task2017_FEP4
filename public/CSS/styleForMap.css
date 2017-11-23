@@ -259,8 +259,9 @@ div.Description input{
 .addedLocationSpan{
     display: block;
     padding-top: 10px;
-   padding-bottom: 20px;
+   padding-bottom: 15px;
     width:80%;
+
 }
 #idChangeTask{
     display: none;

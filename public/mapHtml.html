@@ -23,8 +23,6 @@
 
             this.ServiceType.chousedItems = [];
             for (var key2 in task){
-                console.log(key2);
-
                 if(key2 === '0'){
                     this.ServiceType.chousedItems.push(task[key2]);
                 }
@@ -32,14 +30,10 @@
             }
             this.ServiceType[save] = obj;
             if(typeof location === 'undefined'){
-                if(controller.arrSave.location){
-                    this.ServiceType.location = controller.arrSave.location;
-                }else{ this.ServiceType.location = 'type location...';}
+                this.ServiceType.location = 'type location...';
             }
             if(typeof description === 'undefined'){
-                if(controller.arrSave.location){
-                    this.ServiceType.description = controller.arrSave.description;
-                }else{ this.ServiceType.description =  'type description...';}
+                    this.ServiceType.description =  'type description...';
             }
             if(typeof location !== 'undefined'){
                 this.ServiceType.location = location;
@@ -47,11 +41,22 @@
             if(typeof description !== 'undefined'){
                 this.ServiceType.description = description;
             }
-
             console.log( this.ServiceType);
         }
 
-
+        cangeObjTask(person, ListOfTASKS){
+            this.ServiceType.name = person;
+            for (var key in task['ServiceType']){
+                if(typeof task['ServiceType'][key] === 'object' && key !== 'chousedItems'){
+                    delete task['ServiceType'][key];
+                    break;
+                }
+            }
+            var   save = this.ServiceType.name + '_TASK';
+            task['ServiceType'][save] = ListOfTASKS[this.ServiceType.name];
+            this.ServiceType.chousedItems = [task['ServiceType'][save][0]];
+            console.log(task);
+        }
         addChousedSpanItems(objChousedItems){
             console.log(objChousedItems);
             this.ServiceType.chousedItems = objChousedItems;
@@ -64,7 +69,6 @@
             this.ServiceType.description = description;
         }
         maketASKfromGETPUT(json){
-            console.log('worjs');
             console.log(this);
             console.log(json );
             this.ServiceType= json['ServiceType'];
@@ -79,9 +83,8 @@
             var mounth = date.getMonth();
             var year = date.getFullYear();
             var time = date.getHours() + ":" + date.getMinutes();
-            var str = day + " " + mounth + " " + year + "year, at " + time;
+            var str = day + " " + mounth + " " + year + " year, at " + time;
             task.ServiceType.date = str;
-            //console.log(task);
             $.ajax({
                 url:'/TASK',
                 dateType: 'json',
@@ -90,7 +93,7 @@
                 success:(json)=>{
                     console.log(json);
                     $('div#divRightBlock').remove();
-                    controller.NEWtaskClickedopened = false;
+                    //controller.NEWtaskClickedopened = false;
                     $('div#divLeftBlock').remove();
                     if(typeof json ==='string'){
                         var json = JSON.parse(json);
@@ -101,11 +104,6 @@
         }
         callServerTosaveCHANGES(){
             console.log('callServerTosaveCHANGES');
-            if(controller.arrSave.id){
-                task['ServiceType'].id = controller.arrSave.id;
-                task['ServiceType'].date = controller.arrSave.date;
-                console.log(task);
-            }
             $.ajax({
                 url:'/TASKchangedTOsave',
                 dateType: 'json',
@@ -125,7 +123,6 @@
     class DeleteEditUser{
             deleteUser (eventTarget){
                 var classWithId = $(eventTarget).closest('div').attr('class');
-                console.log(classWithId);
                 var divedeclassWithId = classWithId.split(" ");
                 var id = divedeclassWithId.find((element)=> {
                     return isFinite(element);
@@ -154,7 +151,6 @@
             var id = divedeclassWithId.find((element)=> {
                 return isFinite(element);
             });
-            console.log(id);
             var objId= {"id": id};
             $.ajax({
                 url:'/editeUserONPage',
@@ -165,12 +161,7 @@
                     if(typeof json ==='string'){
                         var json = JSON.parse(json);
                     }
-                    controller.arrSave.id=json['ServiceType'].id;
-                    controller.arrSave.date=json['ServiceType'].date;
-                    controller.arrSave.location=json['ServiceType'].location;
-                    controller.arrSave.description=json['ServiceType'].description;
                     controller.callViewToChangeRightBlock_withGOTtask(json);
-                    console.log(controller.arrSave);
                 }
             });
         }
@@ -202,7 +193,6 @@
             for (var x = 0; x<this.namesOfMenuItems.length; x++){
                 $('ul#ulMenu').append('<li id="' + x + '"><span></span><a>' + this.namesOfMenuItems[x] + '</a></li>');
             }
-
             $('#ulMenu li').on('click', controller.itemFromMenuClicked.bind(controller));
         }
 
@@ -238,7 +228,6 @@
             $('.AaddTask').on('click', controller.NEWtaskClicked.bind(controller));
 
             if(parsedJson.length !== 0){
-                console.log(parsedJson.length);
                 console.log(parsedJson);
                 for (var x = 0; x< parsedJson.length; x++){
                     console.log(parsedJson[x]['ServiceType'].id);
@@ -263,8 +252,15 @@
             $('#idChangeTask').css('display', 'inline-block');
         }
 
+        showButtonCreateTask(){
+            $('#idChangeTask').css('display', 'none');
+            $('#idCreateTask').css('display', 'block');
+        }
+
         makeRightBlock(task, arrImagesforSERVICEType){
+            var meView = this;
            if(document.getElementById('divRightBlock')){
+
            } else {
                $('#wrapper').append('<div id="divRightBlock"></div>');
                $('#divRightBlock').animate({'right':'0px'},500, 'linear');
@@ -284,9 +280,10 @@
                $('#divRightBlock').append('<div class="TASKS"><span class="SpanTestheader"></span></div>');
                $('div.TASKS').append('<div class="divForAllTasks"></div>');
                $('div.divForAllTasks').append(`<span></span>`);
+               $('#divRightBlock').append('<div class="Description"> <p>DESCRIPTION</p><input type="text" id="Description"></div>');
+               $('#Description').on('change',  controller.inputDescriptionClicked.bind(controller));
            }
 
-            var meView = this;
             console.log(task);
 
             function makeNEWtask(){
@@ -296,29 +293,29 @@
                      $('.spanDefaultTask').html();
                      str += ` to <b> ${task.ServiceType.chousedItems[key2]} <b> `;
                 }
-                if(task.ServiceType.description !== 'type description...'){
+                if(task.ServiceType.description !== 'type description...'){//in block Change task
                     str += `, <b>${task.ServiceType.description} </b>`;
                 }
                 $('.spanDefaultTask').html(str);
 
-                if(task.ServiceType.location !== 'type location...'){
-                    $("input#Location").val(task.ServiceType.location);
-                  }else {
-                    $("input#Location").attr('placeholder', task.ServiceType.location)
-                }
             }
             makeNEWtask();
 
 
-            function makeLocation() {//make location
+            function makeLocation() {//make location in block Create task
                 if(task.ServiceType.location !== 'type location...'){
-                    $(".spanLocation input#Location").val(task.ServiceType.location);
+                    $('.addedLocationSpan').css('display', 'block');
+                    $('.addedLocationSpan').html(task.ServiceType.location);
+                    $("input#Location").val(task.ServiceType.location);
+                }else {
+                    $('.addedLocationSpan').css('display', 'none');
+                    $("input#Location").val('');
+                    $("input#Location").attr('placeholder', task.ServiceType.location)
                 }
             }
             makeLocation();
-                if(!document.querySelector('.ServiceTypeVlock div')){
-                    console.log("NO");
-                    }else {
+
+                if(document.querySelector('.ServiceTypeVlock div')){
                     $('.ServiceTypeVlock').html('');
                     $('.ServiceTypeVlock img').off('click');
                 }
@@ -332,20 +329,15 @@
                 }
 
             $('.ServiceTypeVlock img').on('click', controller.imageClicked.bind(controller));
-             console.log(task.ServiceType.name);
             var task_ServiceType_name = task.ServiceType.name;
             $('.ServiceTypeVlock img#' + task_ServiceType_name).addClass('activeIMG');
 
             function createBlockTasks (task_ServiceType_name){//makes block with tasks for special worker
                 var touppercase = task_ServiceType_name.toUpperCase();
                 $('.SpanTestheader').html(touppercase + ' TASKS');
-
                 var count=0;
                 for (var key in task.ServiceType){
-                    if(key === 'chousedItems'){
-                    }
-                    else if(typeof task.ServiceType[key] === 'object' && key !== 'chousedItems'){
-                        console.log(key);
+                     if(typeof task.ServiceType[key] === 'object' && key !== 'chousedItems'){
                         if(!document.querySelector('div.divForAllTasks span')){
                         }else {
                             $('div.divForAllTasks').html('');
@@ -353,11 +345,8 @@
                         }
                         for (var key2 in task.ServiceType[key]){
                             $('div.divForAllTasks').append(`<span id="${count}span">${task.ServiceType[key][key2]}</span>`);
-                                console.log(task.ServiceType[key][key2]);
                            for(var keyInChousedItems in task.ServiceType.chousedItems) {
-                               console.log(keyInChousedItems);
                                if(task.ServiceType.chousedItems[keyInChousedItems] === task.ServiceType[key][key2]){
-                                   console.log(keyInChousedItems);
                                    $('div.divForAllTasks span#' + count + "span").toggleClass( "activeSPAN" );
                                }
                            }
@@ -372,17 +361,12 @@
 
 
             function makeDescription() {//make Description
-                if(!document.querySelector('.Description')){
-                    $('#divRightBlock').append('<div class="Description"> <p>DESCRIPTION</p><input type="text" id="Description"></div>');
-                    $('#Description').on('change',  controller.inputDescriptionClicked.bind(controller));
-                }
                 if(task.ServiceType.description !== 'type description...'){
-                    console.log(task.ServiceType.description);
                     $("input#Description").val(task.ServiceType.description);
                 }else {
+                    $("input#Description").val('');
                     $("input#Description").attr('placeholder', task.ServiceType.description)
                 }
-
             }
             makeDescription();
         }
@@ -396,14 +380,12 @@
 
         insertDescription(eventTargetDescription){
             this.description = $(eventTargetDescription).val();
-            console.log(this);
             $(eventTargetDescription).value =  this.description;
         }
 
         hightlightImg(eventTarget){
             $('img').removeClass( "activeIMG");
             $(eventTarget).toggleClass( "activeIMG");
-            console.log(task);
         }
 
         hightlightSpanTASK(eventTarget){
@@ -425,7 +407,6 @@
     }
     class Controller {
         constructor(arrImagesforSERVICEType, ListOfTASKS){
-            this.arrSave = [];
             this.arrImagesforSERVICEType = arrImagesforSERVICEType;
             this.ListOfTASKS = ListOfTASKS;
         }
@@ -434,7 +415,6 @@
         }
         itemFromMenuClicked(){
             var eventTarget = event.target;
-            console.log(eventTarget);
             view.procesClickOnMenuItem(eventTarget);
         }
         DASHBOARDclicled(){
@@ -446,8 +426,9 @@
             view.outputLeftBlockWithTasks(json);
         }
         NEWtaskClicked(){
-                task.makeobjTASKS(this.ListOfTASKS, 'electician');
-                view.makeRightBlock(task, this.arrImagesforSERVICEType);
+            task.makeobjTASKS(this.ListOfTASKS, 'electician');
+            view.showButtonCreateTask();
+            view.makeRightBlock(task, this.arrImagesforSERVICEType);
         }
         outputRightBlockEditTask(json){
             view.makeRightBlock(json, this.arrImagesforSERVICEType);
@@ -469,14 +450,13 @@
             var person = event.target.id;
             console.log(event.target.id);
             console.log(task);
-            task.makeobjTASKS(this.ListOfTASKS, person, view.location, view.description);
+            task.cangeObjTask(person, this.ListOfTASKS);
 
             console.log(task);
             view.makeRightBlock(task, this.arrImagesforSERVICEType);
         }
 
         SpanClicked (){
-            console.log(event.target);
             var objChousedItems= view.hightlightSpanTASK(event.target);
             task.addChousedSpanItems(objChousedItems);
             console.log(task);
@@ -487,7 +467,6 @@
             var eventTargetLocation = event.target;
             view.insertLocation(eventTargetLocation);
             task.addLocation(view.location);
-            console.log(task);
             view.makeRightBlock(task, this.arrImagesforSERVICEType);
         }
         inputDescriptionClicked(){
@@ -499,7 +478,6 @@
         }
         deleteButtonTaskClicked(){
             var eventTarget  =event.target;
-            console.log(eventTarget);
             var deleteEditUser =  new DeleteEditUser();
             deleteEditUser.deleteUser(eventTarget);
         }
